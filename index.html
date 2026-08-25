@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#4a90d9">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ABC Bible Adventure">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <title>ABC Bible Adventure</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Comic Sans MS', cursive, sans-serif;
+            background: linear-gradient(135deg, #a8d5ff 0%, #e8f4fd 40%, #fff5e6 100%);
+            min-height: 100vh;
+            color: #333;
+            text-align: center;
+            padding: 16px;
+        }
+        h1 {
+            font-size: clamp(1.8rem, 7vw, 2.8rem);
+            margin: 12px 0 8px;
+            color: #2c5aa0;
+            text-shadow: 2px 2px 0 rgba(255,255,255,0.8);
+        }
+        .subtitle {
+            font-size: 1.1rem;
+            color: #5a7bb0;
+            margin-bottom: 20px;
+        }
+        .container { max-width: 900px; margin: 0 auto; }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(58px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .letter-btn {
+            font-size: 1.8rem;
+            font-weight: bold;
+            padding: 14px 8px;
+            border-radius: 16px;
+            background: white;
+            border: 4px solid #4a90d9;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            transition: transform 0.15s, background 0.15s;
+            user-select: none;
+            color: #2c5aa0;
+        }
+        .letter-btn:hover, .letter-btn:active {
+            transform: scale(1.12);
+            background: #ffe08a;
+            border-color: #e6a817;
+        }
+        .display {
+            font-size: clamp(3.5rem, 16vw, 6.5rem);
+            background: white;
+            border-radius: 28px;
+            padding: 24px 16px;
+            margin: 16px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+            line-height: 1.1;
+        }
+        .word {
+            font-size: clamp(1.5rem, 5.5vw, 2.2rem);
+            color: #2c5aa0;
+            font-weight: bold;
+            margin: 8px 0 6px;
+        }
+        .verse {
+            font-size: clamp(0.95rem, 3.5vw, 1.15rem);
+            color: #5a7bb0;
+            font-style: italic;
+            margin-bottom: 16px;
+            padding: 0 10px;
+            line-height: 1.4;
+        }
+        button {
+            font-size: 1.15rem;
+            padding: 14px 28px;
+            margin: 8px;
+            border: none;
+            border-radius: 50px;
+            background: #4a90d9;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: background 0.2s, transform 0.1s;
+        }
+        button:hover { background: #3a7bc0; transform: translateY(-1px); }
+        button:active { transform: translateY(1px); }
+        .nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 16px 0; }
+        .quiz-option {
+            font-size: 1.6rem;
+            min-width: 70px;
+            padding: 16px 20px;
+            margin: 8px;
+            border-radius: 18px;
+        }
+        #home p { font-size: 1.25rem; margin-bottom: 20px; color: #444; }
+        .hidden { display: none !important; }
+        #installBtn {
+            background: #e6a817;
+            display: none;
+            margin-top: 16px;
+        }
+        .cross {
+            font-size: 1.6rem;
+            margin-bottom: 4px;
+        }
+        @media (max-width: 480px) {
+            .grid { grid-template-columns: repeat(5, 1fr); gap: 8px; }
+            .letter-btn { font-size: 1.5rem; padding: 12px 4px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="cross">✝</div>
+        <h1>ABC Bible Adventure</h1>
+        <p class="subtitle">Learning letters with God’s Word</p>
+
+        <div id="home">
+            <p>Let’s learn the alphabet through the Bible!</p>
+            <button onclick="showAlphabet()">Start Learning</button>
+            <button onclick="startQuiz()">Take a Quiz!</button>
+            <button id="installBtn">📲 Install App</button>
+        </div>
+
+        <div id="alphabet" class="hidden">
+            <div class="grid" id="letterGrid"></div>
+            <div class="nav">
+                <button onclick="prevLetter()">← Previous</button>
+                <button onclick="nextLetter()">Next →</button>
+                <button onclick="backToHome()">Home</button>
+            </div>
+            <div id="letterDisplay" class="display"></div>
+            <div id="wordDisplay" class="word"></div>
+            <div id="verseDisplay" class="verse"></div>
+            <button onclick="speakCurrent()">🔊 Hear it!</button>
+        </div>
+
+        <div id="quiz" class="hidden">
+            <h2 style="margin: 16px 0; font-size: 1.7rem; color:#2c5aa0;">What letter is this?</h2>
+            <div id="quizImage" style="font-size: 5rem; margin: 20px 0;"></div>
+            <div id="quizOptions" style="display: flex; flex-wrap: wrap; justify-content: center;"></div>
+            <button onclick="backToHome()" style="margin-top: 20px;">End Quiz</button>
+        </div>
+    </div>
+
+    <script>
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('Service Worker registered'))
+                .catch(err => console.log('SW registration failed:', err));
+        }
+
+        // Install prompt
+        let deferredPrompt;
+        const installBtn = document.getElementById('installBtn');
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installBtn.style.display = 'inline-block';
+        });
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                deferredPrompt = null;
+                installBtn.style.display = 'none';
+            }
+        });
+
+        // Bible-themed alphabet
+        const alphabet = [
+            {letter: "A", word: "Angel", emoji: "👼", verse: "God sends His angels to watch over us. (Psalm 91:11)"},
+            {letter: "B", word: "Bible", emoji: "📖", verse: "Your word is a lamp to my feet. (Psalm 119:105)"},
+            {letter: "C", word: "Cross", emoji: "✝️", verse: "Jesus died on the cross for us. (John 3:16)"},
+            {letter: "D", word: "David", emoji: "🦁", verse: "David trusted God and was brave. (1 Samuel 17)"},
+            {letter: "E", word: "Eternal Life", emoji: "🌅", verse: "God gives us eternal life through Jesus. (John 3:16)"},
+            {letter: "F", word: "Faith", emoji: "🙏", verse: "Faith is trusting God even when we cannot see. (Hebrews 11:1)"},
+            {letter: "G", word: "God", emoji: "☁️", verse: "God is love. (1 John 4:8)"},
+            {letter: "H", word: "Heaven", emoji: "🏡", verse: "Jesus is preparing a place for us in Heaven. (John 14:2)"},
+            {letter: "I", word: "Isaac", emoji: "👦", verse: "Isaac was a special gift from God. (Genesis 21)"},
+            {letter: "J", word: "Jesus", emoji: "❤️", verse: "Jesus loves the little children. (Mark 10:14)"},
+            {letter: "K", word: "King", emoji: "👑", verse: "Jesus is the King of Kings. (Revelation 19:16)"},
+            {letter: "L", word: "Love", emoji: "💕", verse: "We love because God first loved us. (1 John 4:19)"},
+            {letter: "M", word: "Moses", emoji: "🏜️", verse: "God spoke to Moses and led His people. (Exodus 3)"},
+            {letter: "N", word: "Noah", emoji: "🚢", verse: "Noah trusted God and built the ark. (Genesis 6–9)"},
+            {letter: "O", word: "Obey", emoji: "✅", verse: "Children, obey your parents in the Lord. (Ephesians 6:1)"},
+            {letter: "P", word: "Prayer", emoji: "🙏", verse: "Pray without ceasing. (1 Thessalonians 5:17)"},
+            {letter: "Q", word: "Quiet Time", emoji: "🌅", verse: "Be still and know that I am God. (Psalm 46:10)"},
+            {letter: "R", word: "Rainbow", emoji: "🌈", verse: "God’s rainbow is a promise of His love. (Genesis 9:13)"},
+            {letter: "S", word: "Savior", emoji: "✨", verse: "Jesus is our Savior. (Luke 2:11)"},
+            {letter: "T", word: "Thankful", emoji: "🙌", verse: "Give thanks to the Lord, for He is good. (Psalm 107:1)"},
+            {letter: "U", word: "Unity", emoji: "🤝", verse: "How good it is when God’s people live in unity. (Psalm 133:1)"},
+            {letter: "V", word: "Victory", emoji: "🏆", verse: "Thanks be to God who gives us the victory. (1 Corinthians 15:57)"},
+            {letter: "W", word: "Worship", emoji: "🎵", verse: "Worship the Lord with gladness. (Psalm 100:2)"},
+            {letter: "X", word: "eXample", emoji: "🌟", verse: "Jesus is our perfect example. (1 Peter 2:21)"},
+            {letter: "Y", word: "You", emoji: "👧", verse: "God created you and loves you. (Psalm 139:14)"},
+            {letter: "Z", word: "Zacchaeus", emoji: "🌳", verse: "Zacchaeus climbed a tree to see Jesus. (Luke 19:1-10)"}
+        ];
+
+        let currentIndex = 0;
+
+        function showAlphabet() {
+            document.getElementById('home').classList.add('hidden');
+            document.getElementById('alphabet').classList.remove('hidden');
+            document.getElementById('quiz').classList.add('hidden');
+            renderGrid();
+            showLetter(0);
+        }
+
+        function renderGrid() {
+            const grid = document.getElementById('letterGrid');
+            grid.innerHTML = '';
+            alphabet.forEach((item, i) => {
+                const btn = document.createElement('div');
+                btn.className = 'letter-btn';
+                btn.textContent = item.letter;
+                btn.onclick = () => showLetter(i);
+                grid.appendChild(btn);
+            });
+        }
+
+        function showLetter(index) {
+            currentIndex = index;
+            const item = alphabet[index];
+            document.getElementById('letterDisplay').innerHTML = `
+                <div style="font-size:0.5em; color:#4a90d9; margin-bottom:6px;">${item.letter}</div>
+                ${item.emoji}
+            `;
+            document.getElementById('wordDisplay').textContent = item.word;
+            document.getElementById('verseDisplay').textContent = item.verse;
+        }
+
+        function speakCurrent() {
+            const item = alphabet[currentIndex];
+            const utterance = new SpeechSynthesisUtterance(`${item.letter} is for ${item.word}. ${item.verse}`);
+            utterance.rate = 0.85;
+            utterance.pitch = 1.05;
+            speechSynthesis.cancel();
+            speechSynthesis.speak(utterance);
+        }
+
+        function nextLetter() {
+            currentIndex = (currentIndex + 1) % alphabet.length;
+            showLetter(currentIndex);
+        }
+        function prevLetter() {
+            currentIndex = (currentIndex - 1 + alphabet.length) % alphabet.length;
+            showLetter(currentIndex);
+        }
+
+        function backToHome() {
+            document.getElementById('home').classList.remove('hidden');
+            document.getElementById('alphabet').classList.add('hidden');
+            document.getElementById('quiz').classList.add('hidden');
+            speechSynthesis.cancel();
+        }
+
+        function startQuiz() {
+            document.getElementById('home').classList.add('hidden');
+            document.getElementById('alphabet').classList.add('hidden');
+            document.getElementById('quiz').classList.remove('hidden');
+            nextQuizQuestion();
+        }
+
+        function nextQuizQuestion() {
+            const randomIndex = Math.floor(Math.random() * alphabet.length);
+            const item = alphabet[randomIndex];
+            document.getElementById('quizImage').textContent = item.emoji;
+
+            const optionsDiv = document.getElementById('quizOptions');
+            optionsDiv.innerHTML = '';
+
+            let options = [item.letter];
+            while (options.length < 4) {
+                const wrong = alphabet[Math.floor(Math.random() * alphabet.length)].letter;
+                if (!options.includes(wrong)) options.push(wrong);
+            }
+            options.sort(() => Math.random() - 0.5);
+
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'quiz-option';
+                btn.textContent = opt;
+                btn.onclick = () => {
+                    if (opt === item.letter) {
+                        btn.style.background = '#4a90d9';
+                        setTimeout(nextQuizQuestion, 700);
+                    } else {
+                        btn.style.background = '#e74c3c';
+                    }
+                };
+                optionsDiv.appendChild(btn);
+            });
+        }
+    </script>
+</body>
+</html>
