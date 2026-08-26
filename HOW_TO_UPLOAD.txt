@@ -1,0 +1,16 @@
+BIBLE LEARNING ADVENTURE — put this on GitHub Pages
+
+Your live site: https://stevem20h.github.io/abc-adventure/
+
+ON YOUR MAC
+1. Unzip this folder.
+2. Open GitHub Desktop and open your abc-adventure repository.
+3. In Finder, open the abc-adventure folder on your computer.
+4. Delete the OLD files inside it (do not delete the hidden .git folder).
+5. Copy EVERYTHING from this unzipped folder INTO that abc-adventure folder.
+6. In GitHub Desktop, Commit to main, then Push origin.
+7. Wait one minute, then open:
+   https://stevem20h.github.io/abc-adventure/
+
+If the page is blank: GitHub > repo > Settings > Pages
+Deploy from a branch, Branch: main, Folder: / (root).
